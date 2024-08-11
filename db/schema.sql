@@ -1,41 +1,29 @@
+\c postgres;
 
-DROP DATABASE IF EXISTS departments;
-CREATE DATABASE departments;
+DROP DATABASE IF EXISTS employee_db;
+CREATE DATABASE employee_db;
 
-\c departments;
+\c employee_db;
 
+CREATE TABLE department (
+  id SERIAL PRIMARY KEY,
+  name VARCHAR(30) UNIQUE NOT NULL
+);
 
+CREATE TABLE role (
+  id SERIAL PRIMARY KEY,
+  title VARCHAR(30) UNIQUE NOT NULL,
+  salary DECIMAL NOT NULL,
+  department_id INTEGER NOT NULL
+);
 
-
-
-CREATE TABLE departments
-
-
-
-
-INSERT INTO departments (departments_name)
-VALUES ('Marketing'),
-       ('Accounting'),
-       ('Project Management'),
-       ('Human Resources'),
-       ('Logistics');
-
-INSERT INTO roles (title, salary, department_id)
-VALUES ('Marketing Director', 70000, 1),
-       ('Accounting', 60000, 2),
-       ('Project Manager', 65000, 3),
-       ('Human Resources Manager', 70000, 4),
-       ('Logistics Engineer', 80000, 5);
-
-
-INSERT INTO employess (id, fisrt_name, last_name, role_id, manager_id)
-VALUES ('Marketing'),
-       ('Accounting'),
-       ('Project Management'),
-       ('Human Resources'),
-       ('Logistics');
-
-
+CREATE TABLE employes (
+  id SERIAL PRIMARY KEY,
+  fisrt_name VARCHAR(30) UNIQUE NOT NULL,
+  last_name VARCHAR(30) UNIQUE NOT NULL,
+  role_id INTEGER NOT NULL,
+  manager_id INTEGER
+);
 
 
 

@@ -1,7 +1,5 @@
 
 
-/*
-
 const express = require('express');
 // Import and require Pool (node-postgres)
 // We'll be creating a Connection Pool. Read up on the benefits here: https://node-postgres.com/features/pooling
@@ -17,12 +15,12 @@ app.use(express.json());
 // Connect to database
 const pool = new Pool(
   {
-    user: 'gary',
-    password: '',
+    user: 'postgres',
+    password: 'abhorsen',
     host: 'localhost',
-    database: 'movies_db'
+    database: 'employee_db'
   },
-  console.log(`Connected to the movies_db database.`)
+  console.log(`Connected to the employee_db database.`)
 )
 
 pool.connect();
@@ -129,5 +127,4 @@ app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
 
-*/
 
