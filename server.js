@@ -26,10 +26,10 @@ const pool = new Pool(
 pool.connect();
 
 // Create a movie
-app.post('/api/new-movie', ({ body }, res) => {
-  const sql = `INSERT INTO movies (movie_name)
+app.post('/api/employees', ({ body }, res) => {
+  const sql = `INSERT INTO employee ()
     VALUES ($1)`;
-  const params = [body.movie_name];
+  const params = [body.params];
 
   pool.query(sql, params, (err, result) => {
     if (err) {
@@ -43,9 +43,9 @@ app.post('/api/new-movie', ({ body }, res) => {
   });
 });
 
-// Read all movies
-app.get('/api/movies', (req, res) => {
-  const sql = `SELECT id, movie_name AS title FROM movies`;
+// Read all employees
+app.get('/api/employees', (req, res) => {
+  const sql = `SELECT * FROM employee`;
 
   pool.query(sql, (err, { rows }) => {
     if (err) {
