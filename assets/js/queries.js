@@ -1,11 +1,18 @@
 // import all the inquirer stuff needed and other things
-
+const inquirer = require('inquirer')
 const Pool = {}
+const { Pool } = require('pg');
+
+pool.connect();
 
 
 
 async function getAllEmployees(){
 
+    const data = await getAllEmployees(){
+        // display via table or whatever
+    }
+    start()
     // SELECT statement
     // returns back the result
     // WHEN I choose to view all employees
@@ -15,6 +22,26 @@ async function getAllEmployees(){
 
 async function addEmployee(data){
 
+    const listOfDepartments = getAllDepartments().map( dept => {
+        name: dept.name, 
+        value: dept.id
+    })
+
+    const result = await inquirer.prompt([
+        {
+        type: 'input',
+        name: 'name',
+        message: 'What is the employee name?'
+        },
+        {
+        type: 'list',
+        name: 'department',
+        message: getAllDepartments()
+        }
+    ])
+
+    addEmployee(result)
+    start()
     // WHEN I choose to add an employee
     // THEN I am prompted to enter the employee’s first name, last name, role, and manager, and that employee is added to the database
     
