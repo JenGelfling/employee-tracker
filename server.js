@@ -24,11 +24,14 @@ const pool = new Pool(
 
 pool.connect();
 
-// Create a movie
-app.post('/api/employees', ({ body }, res) => {
-  const sql = `INSERT INTO employee ()
-    VALUES ($1)`;
-  const params = [body.params];
+// Create an employee
+app.post('/api/employees', (req, res) => {
+  const { first_name, last_name, role_id, manager_id } = req.body;
+  const sql = `INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES ($1, $2, $3, $4) RETURNING *`;
+  const params = [first_name, last_name, role_id, manager_id];
+  // const sql = `INSERT INTO employee ()
+  //   VALUES ($1)`;
+  // const params = [body.params];
 
   pool.query(sql, params, (err, result) => {
     if (err) {
@@ -37,7 +40,8 @@ app.post('/api/employees', ({ body }, res) => {
     }
     res.json({
       message: 'success',
-      data: body
+      // data: body
+      data: result.rows[0]
     });
   });
 });
@@ -58,27 +62,96 @@ app.get('/api/employees', (req, res) => {
   });
 });
 
-// Delete a movie
-app.delete('/api/movie/:id', (req, res) => {
-  const sql = `DELETE FROM movies WHERE id = $1`;
-  const params = [req.params.id];
+
+// Create a department
+app.post('/api/departments', (req, res) => {
+  const { department_name } = req.body;
+  const sql = `INSERT INTO department (department_name) VALUES ($1) RETURNING *`;
+  const params = [department_name];
 
   pool.query(sql, params, (err, result) => {
     if (err) {
-      res.statusMessage(400).json({ error: err.message });
-    } else if (!result.rowCount) {
-      res.json({
-        message: 'Movie not found'
-      });
-    } else {
-      res.json({
-        message: 'deleted',
-        changes: result.rowCount,
-        id: req.params.id
-      });
+      res.status(400).json({ error: err.message });
+      return;
     }
+    res.json({
+      message: 'success',
+      data: result.rows[0]
+    });
   });
 });
+
+// Read all departments
+app.get('/api/departments', (req, res) => {
+  const sql = `SELECT * FROM department`;
+
+  pool.query(sql, (err, { rows }) => {
+    if (err) {
+      res.status(500).json({ error: err.message });
+      return;
+    }
+    res.json({
+      message: 'success',
+      data: rows
+    });
+  });
+});
+
+// Create a role
+app.post('/api/roles', (req, res) => {
+  const { title, salary, department_id } = req.body;
+  const sql = `INSERT INTO role (title, salary, department_id) VALUES ($1, $2, $3) RETURNING *`;
+  const params = [title, salary, department_id];
+
+  pool.query(sql, params, (err, result) => {
+    if (err) {
+      res.status(400).json({ error: err.message });
+      return;
+    }
+    res.json({
+      message: 'success',
+      data: result.rows[0]
+    });
+  });
+});
+
+// Read all roles
+app.get('/api/roles', (req, res) => {
+  const sql = `SELECT * FROM role`;
+
+  pool.query(sql, (err, { rows }) => {
+    if (err) {
+      res.status(500).json({ error: err.message });
+      return;
+    }
+    res.json({
+      message: 'success',
+      data: rows
+    });
+  });
+});
+
+// Delete an employee
+// app.delete('/api/employee/:id', (req, res) => {
+//   const sql = `DELETE FROM employees WHERE id = $1`;
+//   const params = [req.params.id];
+
+//   pool.query(sql, params, (err, result) => {
+//     if (err) {
+//       res.statusMessage(400).json({ error: err.message });
+//     } else if (!result.rowCount) {
+//       res.json({
+//         message: 'Employee not found'
+//       });
+//     } else {
+//       res.json({
+//         message: 'deleted',
+//         changes: result.rowCount,
+//         id: req.params.id
+//       });
+//     }
+//   });
+// });
 
 // Read list of all reviews and associated movie name using LEFT JOIN
 app.get('/api/movie-reviews', (req, res) => {
