@@ -1,93 +1,66 @@
-// import all the inquirer stuff needed and other things
-const inquirer = require('inquirer')
-const Pool = {}
+
 const { Pool } = require('pg');
+const inquirer = require('inquirer');
 
-pool.connect();
+const pool = new Pool({
+  user: 'postgres',
+  host: 'localhost',
+  database: 'employee_db',
+  password: 'abhorsen',
+  port: 5432,
+});
 
-
-
-async function getAllEmployees(){
-
-    const data = await getAllEmployees(){
-        // display via table or whatever
-    }
-    start()
-    // SELECT statement
-    // returns back the result
-    // WHEN I choose to view all employees
-    // THEN I am presented with a formatted table showing employee data, including employee ids, first names, last names, job titles, departments, salaries, and managers that the employees report to
-
+async function getAllDepartments() {
+  const { rows } = await pool.query('SELECT * FROM department');
+  return rows;
 }
 
-async function addEmployee(data){
-
-    const listOfDepartments = getAllDepartments().map( dept => {
-        name: dept.name, 
-        value: dept.id
-    })
-
-    const result = await inquirer.prompt([
-        {
-        type: 'input',
-        name: 'name',
-        message: 'What is the employee name?'
-        },
-        {
-        type: 'list',
-        name: 'department',
-        message: getAllDepartments()
-        }
-    ])
-
-    addEmployee(result)
-    start()
-    // WHEN I choose to add an employee
-    // THEN I am prompted to enter the employee’s first name, last name, role, and manager, and that employee is added to the database
-    
+async function getAllRoles() {
+  const { rows } = await pool.query(`
+    SELECT role.id, role.title, role.salary, department.department_name AS department
+    FROM role
+    JOIN department ON role.department_id = department.id
+  `);
+  return rows;
 }
 
-async function updateEmployeeRole(data){
-    
-    // WHEN I choose to update an employee role
-    // THEN I am prompted to select an employee to update and their new role and this information is updated in the database
+async function getAllEmployees() {
+  const { rows } = await pool.query(`
+    SELECT employee.id, employee.first_name, employee.last_name, role.title AS role, department.department_name AS department, role.salary, manager.first_name AS manager
+    FROM employee
+    JOIN role ON employee.role_id = role.id
+    JOIN department ON role.department_id = department.id
+    LEFT JOIN employee AS manager ON employee.manager_id = manager.id
+  `);
+  return rows;
 }
 
-async function getAllDepartments(){
-
-    // WHEN I choose to view all departments
-    // THEN I am presented with a formatted table showing department names and department ids
+async function addDepartment(name) {
+  const result = await pool.query('INSERT INTO department (department_name) VALUES ($1) RETURNING *', [name]);
+  return result.rows[0];
 }
 
-async function addDepartment(data){
-
-    // WHEN I choose to add a department
-    // THEN I am prompted to enter the name of the department and that department is added to the database
-
+async function addRole(title, salary, departmentId) {
+  const result = await pool.query('INSERT INTO role (title, salary, department_id) VALUES ($1, $2, $3) RETURNING *', [title, salary, departmentId]);
+  return result.rows[0];
 }
 
-async function getAllRoles(){
-
-    // WHEN I choose to view all roles
-    // THEN I am presented with the job title, role id, the department that role belongs to, and the salary for that role
-
+async function addEmployee(firstName, lastName, roleId, managerId) {
+  const result = await pool.query('INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES ($1, $2, $3, $4) RETURNING *', [firstName, lastName, roleId, managerId]);
+  return result.rows[0];
 }
 
-async function addRole(data){
-
-    // WHEN I choose to add a role
-    // THEN I am prompted to enter the name, salary, and department for the role and that role is added to the database
-
+async function updateEmployeeRole(employeeId, newRoleId, newManagerId) {
+  const result = await pool.query('UPDATE employee SET role_id = $1, manager_id = $2 WHERE id = $3', [newRoleId, newManagerId, employeeId]);
+  return result.rows[0];
 }
-
-
 
 module.exports = {
-    getAllDepartments,
-    addDepartment,
-    getAllEmployees,
-    addEmployee,
-    getAllRoles,
-    addRole,
-    updateEmployeeRole
-}
+  getAllDepartments,
+  getAllRoles,
+  getAllEmployees,
+  addDepartment,
+  addRole,
+  addEmployee,
+  updateEmployeeRole,
+};
